@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>點我彈出圖片</title>
+  <style>
+    /* ====== 全域樣式 ====== */
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      /* 你的原本排版保留 */
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      /* ❌ 移除原本的背景圖片，交給影片處理 */
+      /* background: url('images.jpeg') no-repeat center center fixed; */
+      /* background-size: cover; */
+
+      color: #e8ecff;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+      overflow: hidden;
+      position: relative; /* 讓 ::before 遮罩能正確蓋在內容之下、影片之上 */
+    }
+
+    /* 半透明遮罩（讓字更清楚） */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.35);
+      z-index: 0; /* 影片在 -1、內容在 1、popup 在 100 */
+      pointer-events: none;
+    }
+
+    /* ====== 你的原有樣式 ====== */
+    h1 {
+      cursor: pointer;
+      padding: 20px 40px;
+      background: linear-gradient(90deg, #7aa2ff, #a57aff);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 0 rgba(122,162,255,0.5), 0 12px 20px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      z-index: 1;
+    }
+    h1:active {
+      transform: translateY(4px);
+      box-shadow: 0 4px 0 rgba(122,162,255,0.5), 0 8px 16px rgba(0,0,0,0.3);
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.7);
+      display: flex; justify-content: center; align-items: center;
+      transform: scale(0);
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 100; /* 永遠蓋最上層 */
+    }
+    .popup.active {
+      transform: scale(1);
+      opacity: 1;
+      animation: popup-bounce 0.7s cubic-bezier(.34,1.56,.64,1);
+    }
+    .popup img {
+      max-width: 80%;
+      max-height: 80%;
+      border-radius: 10px;
+      transform: scale(0.7);
+      animation: image-bounce 0.7s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+
+    @keyframes image-bounce {
+      0% { transform: scale(0.7) rotate(0deg); opacity: 0; }
+      30% { transform: scale(1.2) rotate(3deg); opacity: 1; }
+      60% { transform: scale(0.95) rotate(-2deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+    @keyframes popup-bounce {
+      0% { transform: scale(0); opacity: 0; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 發光連結特效 */
+    a.glow-link {
+      margin-top: 60px;
+      text-decoration: none;
+      color: #9fbfff;
+      font-size: 28px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.08);
+      padding: 15px 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(122,162,255,0.3);
+      transition: all 0.3s ease;
+      animation: subtle-shake 3s infinite ease-in-out;
+      position: relative;
+      z-index: 1;
+    }
+    a.glow-link:hover {
+      color: #ffffff;
+      box-shadow: 0 0 30px rgba(150, 200, 255, 0.7),
+                  0 0 60px rgba(170, 100, 255, 0.5);
+      transform: scale(1.05);
+      text-shadow: 0 0 10px #a57aff, 0 0 20px #7aa2ff;
+    }
+    @keyframes subtle-shake {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(3px); }
+    }
+
+    /* 背景影片樣式（固定鋪滿、置底） */
+    .bg-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1; /* 影片在最底層 */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🔥 背景影片：放在 <body> 最前面 -->
+  <video class="bg-video" autoplay loop muted playsinline>
+    <source src="bgvideo.mp4" type="video/mp4">
+    你的瀏覽器不支援影片播放。
+  </video>
+
+  <!-- 內容區 -->
+  <h1 id="clickText">要試點我</h1>
+
+  <div id="popup" class="popup">
+    <img src="66666.jpeg" alt="彈出圖片">
+  </div>
+
+  <!-- 互動腳本 -->
+  <script>
+    const clickText = document.getElementById('clickText');
+    const popup = document.getElementById('popup');
+
+    clickText.addEventListener('click', () => {
+      popup.classList.add('active');
+    });
+
+    popup.addEventListener('click', () => {
+      popup.classList.remove('active');
+    });
+  </script>
+
+  <!-- 🚀 加上炫光連結 -->
+  <a class="glow-link" href="index.html">前往另一個頁面 ✨</a>
+</body>
+</html>
